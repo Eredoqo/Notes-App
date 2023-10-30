@@ -1,35 +1,37 @@
 import { useMemo, useState } from "react";
-import { Button, Card, Col, Form, Row, Stack } from "react-bootstrap";
+import { Badge, Button, Card, Col, Form, Row, Stack } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import ReactSelect from "react-select";
-import { Note, Tag } from "./App";
+import { Tag } from "./App";
+import styles from "./NoteList.module.css";
 
 type NoteListProps = {
   availableTags: Tag[];
-  notes: Note[];
+  notes: SimpleNote[];
 };
 
 type SimpleNote = {
-  id?: string;
-  title: string;
-  tags: Tag[];
+  id: string;
+  title: string | undefined;
+  tag: Tag[];
 };
 
-export function NoteList({ availableTags }: NoteListProps) {
+export function NoteList({ availableTags, notes }: NoteListProps) {
   const [selecetedTags, setSelectedTags] = useState<Tag[]>([]);
   const [title, setTilte] = useState("");
+
   const fileteredNotes = useMemo(() => {
     return notes.filter((note) => {
       return (
         (title === "" ||
-          note.title.lowerCase().includes(title.toLowerCase())) &&
+          note.title?.toLowerCase().includes(title.toLowerCase())) &&
         (selecetedTags.length === 0 ||
           selecetedTags.every((tag) =>
-            note.tags.some((noteTag) => noteTag.id === tag.id)
+            note.tag.some((noteTag) => noteTag.id === tag.id)
           ))
       );
     });
-  }, [title, selecetedTags]);
+  }, [notes, title, selecetedTags]);
 
   return (
     <>
@@ -70,10 +72,10 @@ export function NoteList({ availableTags }: NoteListProps) {
                 options={availableTags.map((tag) => {
                   return { label: tag.label, value: tag.id };
                 })}
-                onChange={(tags) =>
+                onChange={(tag) =>
                   setSelectedTags(
-                    tags.map((tag) => {
-                      return { label: tag.label, id: tag.value };
+                    tag.map((t) => {
+                      return { label: t.label, id: t.value };
                     })
                   )
                 }
@@ -84,13 +86,9 @@ export function NoteList({ availableTags }: NoteListProps) {
         </Row>
       </Form>
       <Row xs={1} sm={2} lg={3} xl={4} xxl={5} className="g-3">
-        {fileteredNotes.map((filteredNote) => (
-          <Col key={filteredNote.id}>
-            <NoteCard
-              id={note.id}
-              title={NoteList.title}
-              tags={NoteList.tags}
-            />
+        {fileteredNotes.map((note) => (
+          <Col key={note.id}>
+            <NoteCard id={note.id} title={note.title} tag={note.tag} />
           </Col>
         ))}
       </Row>
@@ -98,14 +96,34 @@ export function NoteList({ availableTags }: NoteListProps) {
   );
 }
 
-function NoteCard({ id, title, tags }: SimpleNote) {
+function NoteCard({ id, title, tag }: SimpleNote) {
   return (
     <Card
       as={Link}
       to={`/${id}`}
       className={`h-100 text-reset text-decoration-none ${styles.card}`}
     >
-      <Card.Body></Card.Body>
+      <Card.Body>
+        <Stack
+          gap={2}
+          className="custom-align-items justify-content-center h-100"
+        >
+          <span className="fs-5">{title}</span>
+          {tag.length > 0 && (
+            <Stack
+              gap={1}
+              direction="horizontal"
+              className="justify-content-center flex-wrap"
+            >
+              {tag.map((t) => (
+                <Badge className="text-truncate" key={t.id}>
+                  {t.label}
+                </Badge>
+              ))}
+            </Stack>
+          )}
+        </Stack>
+      </Card.Body>
     </Card>
   );
 }
