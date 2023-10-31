@@ -6,7 +6,7 @@ import {
 } from "react-router-dom";
 import { Note } from "./App";
 
-export type NoteLayoutProps = {
+type NoteLayoutProps = {
   notes: Note[];
 };
 

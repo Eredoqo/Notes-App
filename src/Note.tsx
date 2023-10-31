@@ -1,6 +1,6 @@
 import { Badge, Button, Col, Row, Stack } from "react-bootstrap";
-import { useNote } from "./NoteLayout";
 import { Link, useNavigate } from "react-router-dom";
+import { useNote } from "./NoteLayout";
 import ReactMarkdown from "react-markdown";
 
 type NoteProps = {
@@ -9,7 +9,6 @@ type NoteProps = {
 
 export function Note({ onDelete }: NoteProps) {
   const note = useNote();
-
   const navigate = useNavigate();
 
   return (
@@ -17,35 +16,31 @@ export function Note({ onDelete }: NoteProps) {
       <Row className="align-items-center mb-4">
         <Col>
           <h1>{note.title}</h1>
-          {note.tags && note.tags.length > 0 && (
-            <Stack gap={1} direction="horizontal" className=" flex-wrap">
-              {note.tags &&
-                note.tags.map((t) => (
-                  <Badge className="text-truncate" key={t.id}>
-                    {t.label}
-                  </Badge>
-                ))}
+          {note.tags.length > 0 && (
+            <Stack gap={1} direction="horizontal" className="flex-wrap">
+              {note.tags.map((tag) => (
+                <Badge className="text-truncate" key={tag.id}>
+                  {tag.label}
+                </Badge>
+              ))}
             </Stack>
           )}
         </Col>
         <Col xs="auto">
           <Stack gap={2} direction="horizontal">
-            <Button
-              onClick={() => navigate(`/${note.id}/edit`)}
-              variant="primary"
-            >
-              Edit
-            </Button>
-
+            <Link to={`/${note.id}/edit`}>
+              <Button variant="primary">Edit</Button>
+            </Link>
             <Button
               onClick={() => {
-                onDelete(note.id), navigate("/");
+                onDelete(note.id);
+                navigate("/");
               }}
               variant="outline-danger"
             >
               Delete
             </Button>
-            <Link to="..">
+            <Link to="/">
               <Button variant="outline-secondary">Back</Button>
             </Link>
           </Stack>

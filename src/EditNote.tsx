@@ -10,8 +10,6 @@ type EditNoteProps = {
 
 export function EditNote({ onSubmit, onAddTag, availableTags }: EditNoteProps) {
   const note = useNote();
-  console.log(note, "notes here in edit");
-
   return (
     <>
       <h1 className="mb-4">Edit Note</h1>
